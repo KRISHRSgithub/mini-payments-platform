@@ -21,3 +21,5 @@ Stack: Node.js, Express, PostgreSQL, Docker.
 - **Double-entry ledger:** each transfer writes one DEBIT and one CREDIT of equal amount; balances are updated in the same DB transaction.
 - **Idempotency:** `UNIQUE(from_account, idempotency_key)` + `ON CONFLICT DO NOTHING`; a retry returns the original result (200) and never charges twice. Reusing a key with a different payload returns 422.
 - **Concurrency:** both accounts are locked `FOR UPDATE` in ascending id order, which prevents deadlocks between opposite transfers and prevents overspending; a test fires 30 parallel transfers to prove it.
+
+#To try the API manually, open requests.http in VS Code with the REST Client extension.
