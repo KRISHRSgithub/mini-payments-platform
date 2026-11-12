@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: pay, POSTGRES_PASSWORD: pay, POSTGRES_DB: pay }
+    ports: ["5432:5432"]
+    volumes: ["./schema.sql:/docker-entrypoint-initdb.d/schema.sql"]
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgres://pay:pay@db:5432/pay
+      JWT_SECRET: change-me
+    ports: ["3000:3000"]
+    depends_on: [db]

@@ -1,0 +1,43 @@
+@host = http://localhost:3000
+
+### 1. Register user A
+# @name regA
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{"email":"a@test.com","password":"password123"}
+
+### 2. Register user B
+# @name regB
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{"email":"b@test.com","password":"password123"}
+
+### 3. Deposit 100.00 into A
+POST {{host}}/accounts/me/deposit
+Authorization: Bearer {{regA.response.body.token}}
+Idempotency-Key: d1
+Content-Type: application/json
+
+{"amount_cents": 10000}
+
+### 4. Transfer 25.00 from A to B
+POST {{host}}/transfers
+Authorization: Bearer {{regA.response.body.token}}
+Idempotency-Key: t1
+Content-Type: application/json
+
+{"to_email":"b@test.com","amount_cents":2500}
+
+### 5. A's balance (should be 7500)
+GET {{host}}/accounts/me
+Authorization: Bearer {{regA.response.body.token}}
+
+### 6. B's balance (should be 2500)
+GET {{host}}/accounts/me
+Authorization: Bearer {{regB.response.body.token}}
+
+### 7. A's history
+GET {{host}}/transactions
+Authorization: Bearer {{regA.response.body.token}}
